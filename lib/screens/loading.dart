@@ -9,7 +9,7 @@ class Loading extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: SpinKitFadingFour(
-          color: Colors.white70,
+          color: Theme.of(context).accentColor,
           shape: BoxShape.rectangle,
         ),
       ),

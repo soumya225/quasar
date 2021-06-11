@@ -27,6 +27,7 @@ class _BookmarksState extends State<Bookmarks> {
         itemCount: stories.length,
         itemBuilder: (context, index) {
           return InkWell(
+            splashColor: Theme.of(context).hoverColor,
             borderRadius: BorderRadius.circular(16.0),
             onTap: () async {
               final snackBar = SnackBar(content: Text("Could not open ${stories[index].url}"));
@@ -60,7 +61,7 @@ class _BookmarksState extends State<Bookmarks> {
                 ),
               ),
               trailing: Text(
-                "Published ${timeago.format(stories[index].publishedAt)}",
+                "${timeago.format(stories[index].publishedAt)}",
                 style: TextStyle(color: Theme.of(context).accentColor),
               ),
             ),

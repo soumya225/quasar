@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:quasar/models/story.dart';
 import 'package:quasar/services/boxes.dart';
@@ -20,6 +21,13 @@ class _StoryGridTileState extends State<StoryGridTile> {
   final box = Boxes.getStories();
   Icon _bookmarkIcon = Icon(Icons.bookmark_outline_rounded);
 
+  static final customCacheManager = CacheManager(
+    Config(
+      "customCacheKey",
+      stalePeriod: Duration(days: 1),
+    )
+  );
+
   @override
   void initState() {
     if (box.containsKey(widget.story.url)) {
@@ -31,6 +39,7 @@ class _StoryGridTileState extends State<StoryGridTile> {
   @override
   Widget build(BuildContext context) {
     return InkWell(
+      splashColor: Theme.of(context).hoverColor,
       borderRadius: BorderRadius.circular(16.0),
       onTap: () async {
         final snackBar = SnackBar(content: Text("Could not open ${widget.story.url}"));
@@ -40,6 +49,18 @@ class _StoryGridTileState extends State<StoryGridTile> {
             : ScaffoldMessenger.of(context).showSnackBar(snackBar);
       },
       child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16.0),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Theme.of(context).accentColor,
+              Theme.of(context).cardColor,
+              Theme.of(context).primaryColor
+            ]
+          )
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.start,
@@ -47,6 +68,7 @@ class _StoryGridTileState extends State<StoryGridTile> {
             ClipRRect(
               borderRadius: BorderRadius.circular(16.0),
               child: CachedNetworkImage(
+                cacheManager: customCacheManager,
                 imageUrl: widget.story.imageUrl,
                 placeholder: (context, url) {
                   return SpinKitFadingFour(
@@ -67,11 +89,14 @@ class _StoryGridTileState extends State<StoryGridTile> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.story.newsSite,
-                        style: TextStyle(
-                          color: Color(0xBABABABA),
-                          letterSpacing: 2.0,
+                      Flexible(
+                        child: Text(
+                          widget.story.newsSite,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Color(0xBABABABA),
+                            letterSpacing: 2.0,
+                          ),
                         ),
                       ),
                       IconButton(
@@ -101,7 +126,7 @@ class _StoryGridTileState extends State<StoryGridTile> {
                     ),
                   ),
                   Text(
-                    "Published ${timeago.format(widget.story.publishedAt)}",
+                    "${timeago.format(widget.story.publishedAt)}",
                     style: TextStyle(color: Theme.of(context).accentColor),
                   ),
                   SizedBox(height: 8.0,),
